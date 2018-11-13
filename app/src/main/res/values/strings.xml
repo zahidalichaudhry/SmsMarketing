@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Sms_Marketing</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_two">two</string>
+    <string name="title_activity_bulk__message">Bulk_Message</string>
+    <string name="title_activity_send__sms">Send_Sms</string>
+    <string name="title_activity_sms">Sms</string>
+</resources>

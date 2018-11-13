@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.thinkgeniux.sms_marketing.Bulk_Message"
+    tools:showIn="@layout/app_bar_bulk__message"
+    android:orientation="vertical"
+    android:background="#3c8dbc">
+
+
+    <TextView
+        android:textStyle="bold"
+        android:textColor="#000"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="To"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:inputType="number"
+        android:background="#f9f7f7"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/et1"
+        android:hint="Enter the Number"
+        android:layout_width="match_parent"
+        android:layout_height="40dp" />
+
+
+    <TextView
+        android:textStyle="bold"
+        android:textColor="#000"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="From"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <Spinner
+        android:id="@+id/spin1"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/background_light"
+        android:textColor="@color/colorPrimary"></Spinner>
+
+    <TextView
+        android:textStyle="bold"
+        android:textColor="#000"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:inputType="textMultiLine"
+        android:background="#f9f7f7"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/mes"
+        android:hint="Enter Your Message Here"
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
+
+    <Button
+        android:id="@+id/go"
+        android:text="Send Message"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>
