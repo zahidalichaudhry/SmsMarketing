@@ -29,7 +29,7 @@ public class Groups extends AppCompatActivity
 
         rec=findViewById(R.id.rec);
         rec.setLayoutManager(new LinearLayoutManager(this));
-        String[]countries=new String[]{"Saudi-Arabia","Pakistan"};
+        String[]countries=new String[]{"Saudi -Arabia","Pakistan"};
 
         rec.setAdapter(new recAdaptor(countries));
 
