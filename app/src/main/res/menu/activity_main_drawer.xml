@@ -9,6 +9,11 @@
             android:icon="@drawable/ic_menu_camera"
             android:title="Home" />
         <item
+            android:id="@+id/message"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="SMS" />
+
+        <item
             android:id="@+id/bulk"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Bulk Message" />
@@ -16,6 +21,19 @@
             android:id="@+id/sendmessage"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Send Message" />
+        <item
+            android:title="Groups"
+            android:id="@+id/groups"
+            android:icon="@drawable/ic_menu_camera" />
+        <item
+            android:title="Reports/SMS_Log"
+            android:id="@+id/reports"
+            android:icon="@drawable/ic_menu_camera" />
+        <item
+            android:title="Brands"
+            android:icon="@drawable/ic_menu_camera"
+            android:id="@+id/brands"/>
+
     </group>
         </menu>
 

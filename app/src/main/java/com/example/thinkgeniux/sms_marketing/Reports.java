@@ -1,7 +1,9 @@
 package com.example.thinkgeniux.sms_marketing;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -10,57 +12,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity
+public class Reports extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    Button btn1,btn2,btn3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_reports);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        btn1=findViewById(R.id.btn1);
-        btn2=findViewById(R.id.btn2);
-        btn3=findViewById(R.id.btn3);
-
-        //showing Toast
-        btn1.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(MainActivity.this,Sms.class);
-                startActivity(intent);
-                Toast.makeText(getApplicationContext(),"Sms has been Sent",Toast.LENGTH_SHORT).show();
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
-
-        //coding for Bulk sms send
-        btn2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(MainActivity.this,Bulk_Message.class);
-                startActivity(intent);
-                Toast.makeText(MainActivity.this, "Bulk sms has been sent", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        //coding for exit button
-        btn3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                finish();
-                System.exit(0);
-                Toast.makeText(MainActivity.this, "Exit pressed", Toast.LENGTH_SHORT).show();
-            }
-        });
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -85,7 +55,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.reports, menu);
         return true;
     }
 
@@ -110,26 +80,17 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.home) {
-            Toast.makeText(getApplicationContext(),"You are already on this Acitvity",Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.sendmessage) {
-            Intent intent=new Intent(MainActivity.this,Sms.class);
-            startActivity(intent);
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
 
-        } else if (id == R.id.bulk) {
+        } else if (id == R.id.nav_slideshow) {
 
-            Intent intent=new Intent(MainActivity.this,Bulk_Message.class);
-            startActivity(intent);
+        } else if (id == R.id.nav_manage) {
 
-        } else if (id == R.id.reports) {
-            Intent intent=new Intent(MainActivity.this,Reports.class);
-            startActivity(intent);
+        } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.groups) {
-            Intent intent=new Intent(MainActivity.this,Groups.class);
-            startActivity(intent);
-
-     //   } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_send) {
 
         }
 

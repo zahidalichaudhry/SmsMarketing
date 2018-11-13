@@ -9,4 +9,6 @@
     <string name="title_activity_bulk__message">Bulk_Message</string>
     <string name="title_activity_send__sms">Send_Sms</string>
     <string name="title_activity_sms">Sms</string>
+    <string name="title_activity_reports">Reports</string>
+    <string name="title_activity_groups">Groups</string>
 </resources>

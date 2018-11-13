@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.thinkgeniux.sms_marketing">
-<uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/fakhar"
@@ -26,6 +28,14 @@
         <activity
             android:name=".Sms"
             android:label="@string/title_activity_sms"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Reports"
+            android:label="@string/title_activity_reports"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Groups"
+            android:label="@string/title_activity_groups"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
