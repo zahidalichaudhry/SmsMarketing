@@ -1,5 +1,6 @@
 package com.example.thinkgeniux.sms_marketing;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -17,6 +18,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.thinkgeniux.sms_marketing.DataBase.DbHelper;
+import com.example.thinkgeniux.sms_marketing.VolleySMS.SMS_Send;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 public class Sms extends AppCompatActivity
@@ -26,6 +33,8 @@ public class Sms extends AppCompatActivity
     Spinner spin;
     String[] name=new String[]{"Home","Demo","About"};
     ArrayAdapter adapter;
+    DbHelper SQLite = new DbHelper(this);
+    SMS_Send send_SMS;
 
 
     @Override
@@ -43,33 +52,39 @@ public class Sms extends AppCompatActivity
         adapter=new ArrayAdapter(getApplicationContext(),R.layout.apk,name);
         adapter.setDropDownViewResource(R.layout.apk);
         spin.setAdapter(adapter);
-
+        send_SMS=new SMS_Send();
+        final DbHelper SQLite = new DbHelper(Sms.this);
         go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String to=et1.getText().toString();
                 String from=et2.getText().toString();
                 String message=mes.getText().toString();
+                send_SMS.CallAPi(Sms.this,from,to,message);
 
-                String url = "https://portal.smsbundles.com/sendsms_url.html?Username=03454014792&Password=bramerz792&From=" + from + "&To=" + to + "&Message=" + message;
-                String response = null;
-
-                try {
-                    response = new sendMessage().execute(url).get();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-                if (response.contains("Success"))
-                {
-                    et1.setText("");
-                    et2.setText("");
-                    mes.setText("");
-                }
-                //String res=sms.toString();
-                Toast.makeText(getApplicationContext(),response,Toast.LENGTH_LONG).show();
-                //readJSONFeed(url);
+            DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
+                String date = df.format(Calendar.getInstance().getTime());
+                SQLite.insertSmsLog(to,from,message,date);
+//                SQLite.insertSmsLog(to);
+//                String url = "https://portal.smsbundles.com/sendsms_url.html?Username=03454014792&Password=bramerz792&From=" + from + "&To=" + to + "&Message=" + message;
+//                String response = null;
+//
+//                try {
+//                    response = new sendMessage().execute(url).get();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                } catch (ExecutionException e) {
+//                    e.printStackTrace();
+//                }
+//                if (response.contains("Success"))
+//                {
+//                    et1.setText("");
+//                    et2.setText("");
+//                    mes.setText("");
+//                }
+//                //String res=sms.toString();
+//                Toast.makeText(getApplicationContext(),response,Toast.LENGTH_LONG).show();
+//                //readJSONFeed(url);
 
 
 

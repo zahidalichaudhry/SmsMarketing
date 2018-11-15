@@ -14,11 +14,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.thinkgeniux.sms_marketing.Activities.Groups;
+import com.example.thinkgeniux.sms_marketing.Activities.Sms_Log;
+import com.example.thinkgeniux.sms_marketing.DataBase.DbHelper;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Button btn1,btn2,btn3;
-
+    DbHelper SQLite = new DbHelper(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +33,7 @@ public class MainActivity extends AppCompatActivity
         btn1=findViewById(R.id.btn1);
         btn2=findViewById(R.id.btn2);
         btn3=findViewById(R.id.btn3);
-
+        SQLite = new DbHelper(getApplicationContext());
         //showing Toast
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +126,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
 
         } else if (id == R.id.reports) {
-            Intent intent=new Intent(MainActivity.this,Reports.class);
+            Intent intent=new Intent(MainActivity.this,Sms_Log.class);
             startActivity(intent);
 
         } else if (id == R.id.groups) {

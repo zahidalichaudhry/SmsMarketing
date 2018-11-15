@@ -3,6 +3,8 @@
     package="com.example.thinkgeniux.sms_marketing">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -34,9 +36,11 @@
             android:label="@string/title_activity_reports"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Groups"
+            android:name=".Activities.Groups"
             android:label="@string/title_activity_groups"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Activities.Group_Details" />
+        <activity android:name=".Activities.Sms_Log"></activity>
     </application>
 
 </manifest>
