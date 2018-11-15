@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.thinkgeniux.sms_marketing.Activities.Brands;
 import com.example.thinkgeniux.sms_marketing.Activities.Groups;
 import com.example.thinkgeniux.sms_marketing.Activities.Sms_Log;
 import com.example.thinkgeniux.sms_marketing.DataBase.DbHelper;
@@ -134,6 +135,13 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
 
      //   } else if (id == R.id.nav_send) {
+
+        }
+        else if (id == R.id.brands) {
+            Intent intent=new Intent(MainActivity.this,Brands.class);
+            startActivity(intent);
+
+            //   } else if (id == R.id.nav_send) {
 
         }
 

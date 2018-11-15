@@ -131,9 +131,9 @@ public class Group_Details extends AppCompatActivity {
     private void selectCSVFile(){
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-//        intent.setType("text/csv");
+        intent.setType("text/csv");
 //        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("*/*");
+//        intent.setType("*/*");
         Intent i = Intent.createChooser(intent, "File");
 //        startActivityForResult(Intent.createChooser(intent, "Open CSV"), 1);
         startActivityForResult(i, 1);

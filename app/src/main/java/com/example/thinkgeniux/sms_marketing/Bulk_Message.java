@@ -1,5 +1,6 @@
 package com.example.thinkgeniux.sms_marketing;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -11,21 +12,45 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.thinkgeniux.sms_marketing.DataBase.DbHelper;
+import com.example.thinkgeniux.sms_marketing.PojoClass.ContactItem;
+import com.example.thinkgeniux.sms_marketing.PojoClass.GroupItem;
+import com.example.thinkgeniux.sms_marketing.PojoClass.Spinner_Pojo;
+import com.example.thinkgeniux.sms_marketing.VolleySMS.SMS_Send;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+
 public class Bulk_Message extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    EditText et1,et2,mes;
-    Button go;
-    Spinner spin1;
-    String[] names=new String[]{"Home","Demo","List"};
+//    EditText et1,et2,mes;
+    EditText message;
+    Button sendSms;
+    Spinner to,from;
+    String toName="",fromName="";
+    String tId="",fromId="",messagestring;
+    private ProgressDialog loading;
+    int GroupIdInt;
+//    String color_name="",size_name="";
+//    String[] names=new String[]{"Home","Demo","List"};
     ArrayAdapter<String> adapter;
+    ArrayList<ContactItem> arrayListContacts=new ArrayList<>();
+    ArrayList<Spinner_Pojo> arrayListTo= new ArrayList<>();
+    ArrayList<Spinner_Pojo> arrayListFrom= new ArrayList<>();
+    DbHelper SQLite = new DbHelper(this);
+    ArrayList<GroupItem> arrayListGroups=new ArrayList<>();
+    ArrayList<GroupItem> arrayListBrands=new ArrayList<>();
 
-
+    SMS_Send send_SMS;
 
 
 
@@ -38,25 +63,67 @@ public class Bulk_Message extends AppCompatActivity
 
 
 
+//
+//        et1=findViewById(R.id.et1);
+//     //   et2=findViewById(R.id.et2);
+//        mes=findViewById(R.id.mes);
+        sendSms=findViewById(R.id.go);
+        message=(EditText)findViewById(R.id.message) ;
+        send_SMS=new SMS_Send();
+        sendSms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                loading = ProgressDialog.show(Bulk_Message.this,"Sending...","Please wait...",false,false);
+                getAllDataGroupContactsAndSending();
 
-        et1=findViewById(R.id.et1);
-     //   et2=findViewById(R.id.et2);
-        mes=findViewById(R.id.mes);
-        go=findViewById(R.id.go);
-        spin1=findViewById(R.id.spin1);
 
+            }
+        });
+//        spin1=findViewById(R.id.from);
 
-        adapter=new ArrayAdapter<String>(this,R.layout.apk,names);
-        adapter.setDropDownViewResource(R.layout.apk);
-        spin1.setAdapter(adapter);
+        to = (Spinner) findViewById(R.id.to);
+        from = (Spinner) findViewById(R.id.from);
+        to.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
 
-      go.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View view) {
-            //  String from=et2.getText().toString();
-              String message=mes.getText().toString();
-          }
-      });
+                Spinner_Pojo group = (Spinner_Pojo) parent.getSelectedItem();
+                toName = group.getName().toString();
+                tId = group.getId().toString();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        from.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Spinner_Pojo brand = (Spinner_Pojo) parent.getSelectedItem();
+                fromName = brand.getName().toString();
+                fromId = brand.getId().toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+//        adapter=new ArrayAdapter<String>(this,R.layout.apk,names);
+//        adapter.setDropDownViewResource(R.layout.apk);
+////        spin1.setAdapter(adapter);
+
+//      go.setOnClickListener(new View.OnClickListener() {
+//          @Override
+//          public void onClick(View view) {
+//            //  String from=et2.getText().toString();
+//              String message=mes.getText().toString();
+//          }
+//      });
 
 
 
@@ -68,6 +135,54 @@ public class Bulk_Message extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        getSenderList();
+        getGroupsList();
+    }
+
+    private void getAllDataGroupContactsAndSending()
+    {
+
+        GroupIdInt = Integer.parseInt(tId);
+        arrayListContacts = SQLite.getAllDataContacts(GroupIdInt);
+        messagestring=message.getText().toString().trim();
+        for (int i=0;i<arrayListContacts.size();i++)
+        {
+            String sendingNumber="0"+arrayListContacts.get(i).getContact_Name();
+            send_SMS.CallAPi(Bulk_Message.this,fromName,sendingNumber,messagestring);
+            DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
+            String date = df.format(Calendar.getInstance().getTime());
+            SQLite.insertSmsLog(sendingNumber,fromName,messagestring,date);
+//            Toast.makeText(Bulk_Message.this,sendingNumber,Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    private void getGroupsList()
+    {
+        arrayListGroups = SQLite.getAllDataGroup();
+        for (int i=0;i<arrayListGroups.size();i++)
+        {
+            arrayListTo.add(new Spinner_Pojo(arrayListGroups.get(i).getGroup_Id(),arrayListGroups.get(i).getGroup_Name()));
+        }
+        ArrayAdapter<Spinner_Pojo> adapter = new
+                ArrayAdapter<Spinner_Pojo>(Bulk_Message.this,
+                android.R.layout.simple_spinner_dropdown_item, arrayListTo);
+        to.setPrompt("Sending Group");
+        to.setAdapter(adapter);
+    }
+
+    private void getSenderList()
+    {
+        arrayListBrands = SQLite.getAllDataBrands();
+        for (int i=0;i<arrayListBrands.size();i++)
+        {
+            arrayListFrom.add(new Spinner_Pojo(arrayListBrands.get(i).getGroup_Id(),arrayListBrands.get(i).getGroup_Name()));
+        }
+        ArrayAdapter<Spinner_Pojo> adapter = new
+                ArrayAdapter<Spinner_Pojo>(Bulk_Message.this,
+                android.R.layout.simple_spinner_dropdown_item, arrayListFrom);
+        from.setPrompt("Brand From");
+        from.setAdapter(adapter);
     }
 
     @Override

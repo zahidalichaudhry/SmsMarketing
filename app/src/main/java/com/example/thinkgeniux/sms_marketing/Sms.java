@@ -1,6 +1,7 @@
 package com.example.thinkgeniux.sms_marketing;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -35,6 +36,7 @@ public class Sms extends AppCompatActivity
     ArrayAdapter adapter;
     DbHelper SQLite = new DbHelper(this);
     SMS_Send send_SMS;
+    private ProgressDialog loading;
 
 
     @Override
@@ -60,11 +62,13 @@ public class Sms extends AppCompatActivity
                 String to=et1.getText().toString();
                 String from=et2.getText().toString();
                 String message=mes.getText().toString();
+                loading = ProgressDialog.show(Sms.this,"Sending...","Please wait...",false,false);
                 send_SMS.CallAPi(Sms.this,from,to,message);
 
-            DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
+                DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
                 String date = df.format(Calendar.getInstance().getTime());
                 SQLite.insertSmsLog(to,from,message,date);
+                loading.dismiss();
 //                SQLite.insertSmsLog(to);
 //                String url = "https://portal.smsbundles.com/sendsms_url.html?Username=03454014792&Password=bramerz792&From=" + from + "&To=" + to + "&Message=" + message;
 //                String response = null;

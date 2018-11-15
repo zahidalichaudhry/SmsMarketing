@@ -40,7 +40,8 @@
             android:label="@string/title_activity_groups"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Activities.Group_Details" />
-        <activity android:name=".Activities.Sms_Log"></activity>
+        <activity android:name=".Activities.Sms_Log" />
+        <activity android:name=".Activities.Brands"></activity>
     </application>
 
 </manifest>

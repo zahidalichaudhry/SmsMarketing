@@ -20,10 +20,10 @@ import java.util.ArrayList;
  * Created by ThinkGeniux on 13/11/2018.
  */
 
-public class GroupItemAdaptor extends RecyclerView.Adapter<GroupItemAdaptor.ProgrammingViewHolder> {
+public class BrandsItemAdaptor extends RecyclerView.Adapter<BrandsItemAdaptor.ProgrammingViewHolder> {
     ArrayList<GroupItem> arrayList=new ArrayList<>();
     Activity activity;
-    public GroupItemAdaptor(ArrayList<GroupItem> arrayList, Context context){
+    public BrandsItemAdaptor(ArrayList<GroupItem> arrayList, Context context){
 
     this.arrayList=arrayList;
         activity = (Activity) context;
@@ -43,15 +43,15 @@ public class GroupItemAdaptor extends RecyclerView.Adapter<GroupItemAdaptor.Prog
     public void onBindViewHolder(ProgrammingViewHolder holder, final int position) {
         holder.gtv.setText(arrayList.get(position).getGroup_Name());
         holder.iditem.setText(arrayList.get(position).getGroup_Id());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(activity, Group_Details.class);
-                intent.putExtra("id",arrayList.get(position).getGroup_Id());
-                intent.putExtra("name",arrayList.get(position).getGroup_Name());
-                activity.startActivity(intent);
-            }
-        });
+//        holder.gtv.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(activity, Group_Details.class);
+//                intent.putExtra("id",arrayList.get(position).getGroup_Id());
+//                intent.putExtra("name",arrayList.get(position).getGroup_Name());
+//                activity.startActivity(intent);
+//            }
+//        });
     }
 
 

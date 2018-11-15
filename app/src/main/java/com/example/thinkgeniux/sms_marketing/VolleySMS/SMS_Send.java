@@ -30,9 +30,7 @@ public class SMS_Send
     public String Username="03454014792";
     public String Password="bramerz792";
     //    String message;
-    private ProgressDialog loading;
     public void CallAPi(final Context context, final String from, final String to, final String message){
-    loading = ProgressDialog.show(context,"Sending...","Please wait...",false,false);
     StringRequest request = new StringRequest(Request.Method.POST, BASE_SMS_URl, new com.android.volley.Response.Listener<String>()
     {
 
@@ -43,7 +41,6 @@ public class SMS_Send
 
             Toast.makeText(context, response , Toast.LENGTH_SHORT).show();
 
-            loading.dismiss();
 //            try
 //            {
 ////                loading.dismiss();
@@ -71,7 +68,6 @@ public class SMS_Send
     }, new com.android.volley.Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            loading.dismiss();
             //  Log.e("Error",error.printStackTrace());
             Toast.makeText(context, "Volley Error"+error , Toast.LENGTH_SHORT).show();
 //            onBackPressed();

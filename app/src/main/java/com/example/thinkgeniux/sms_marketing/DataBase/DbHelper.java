@@ -46,6 +46,11 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_LOG_TIME = "time";
 
 ////////////////////////////////////
+    ////////////////////BRAND TABLE/////////////////////
+public static final String TABLE_NAME_BRAND = "brands";
+    public static final String COLUMN_BRAND_ID = "brandid";
+    public static final String COLUMN_Name_BRAnd = "brandname";
+    //////////////////////////////////////////////
 
     public DbHelper(Context context)
     {
@@ -77,6 +82,13 @@ public class DbHelper extends SQLiteOpenHelper {
                         COLUMN_LOG_TIME + " INTEGER NOT NULL" +
 //                COLUMN_ADDRESS + " TEXT NOT NULL" +
                         " )";
+        final String SQL_BRAND_TABLE =
+                "CREATE TABLE " + TABLE_NAME_BRAND + " (" +
+                        COLUMN_BRAND_ID + " INTEGER PRIMARY KEY autoincrement, " +
+                        COLUMN_Name_BRAnd + " TEXT NOT NULL " +
+//                COLUMN_ADDRESS + " TEXT NOT NULL" +
+                        " )";
+        db.execSQL(SQL_BRAND_TABLE);
         db.execSQL(SQL_LOG_SMS_TABLE);
         db.execSQL(SQL_GROUP_TABLE);
         db.execSQL(SQL_CONTACT_TABLE);
@@ -87,6 +99,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_Group);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_CONTACTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_LOG);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_BRAND);
         onCreate(db);
     }
 
@@ -94,6 +107,28 @@ public class DbHelper extends SQLiteOpenHelper {
         ArrayList<GroupItem> grouplist;
         grouplist = new ArrayList<GroupItem>();
         String selectQuery = "SELECT * FROM " + TABLE_NAME_Group;
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+//                HashMap<String, String> map = new HashMap<String, String>();
+//                map.put(COLUMN_ID, cursor.getString(0));
+//                map.put(COLUMN_NAME_Group, cursor.getString(1));
+//                map.put(COLUMN_ADDRESS, cursor.getString(2));
+//                wordList.add(map);
+                grouplist.add(new GroupItem(cursor.getString(0),cursor.getString(1)));
+            } while (cursor.moveToNext());
+        }
+
+        Log.e("select sqlite ", "" + grouplist);
+
+        database.close();
+        return grouplist;
+    }
+    public ArrayList<GroupItem> getAllDataBrands() {
+        ArrayList<GroupItem> grouplist;
+        grouplist = new ArrayList<GroupItem>();
+        String selectQuery = "SELECT * FROM " + TABLE_NAME_BRAND;
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
@@ -163,6 +198,16 @@ public class DbHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase database = this.getWritableDatabase();
         String queryValues = "INSERT INTO " + TABLE_NAME_Group + " (name) " +
+                "VALUES ('" + name + "')";
+
+        Log.e("insert sqlite ", "" + queryValues);
+        database.execSQL(queryValues);
+        database.close();
+    }
+    public void insertBrands(String name) {
+
+        SQLiteDatabase database = this.getWritableDatabase();
+        String queryValues = "INSERT INTO " + TABLE_NAME_BRAND + " (brandname) " +
                 "VALUES ('" + name + "')";
 
         Log.e("insert sqlite ", "" + queryValues);
