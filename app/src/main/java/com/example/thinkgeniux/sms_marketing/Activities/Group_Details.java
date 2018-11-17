@@ -2,22 +2,31 @@ package com.example.thinkgeniux.sms_marketing.Activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.animation.AnticipateOvershootInterpolator;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.thinkgeniux.sms_marketing.Adapters.ContactsItemAdaptor;
+import com.example.thinkgeniux.sms_marketing.AdaptersHolderItemToch.ContactAdapter;
+import com.example.thinkgeniux.sms_marketing.AdaptersHolderItemToch.GroupBrandsAdapter;
+import com.example.thinkgeniux.sms_marketing.AdaptersHolderItemToch.RecyclerItemTouch;
+import com.example.thinkgeniux.sms_marketing.Constants;
 import com.example.thinkgeniux.sms_marketing.PojoClass.CSVPojo;
 import com.example.thinkgeniux.sms_marketing.PojoClass.ContactItem;
 import com.example.thinkgeniux.sms_marketing.DataBase.DbHelper;
@@ -31,7 +40,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-public class Group_Details extends AppCompatActivity {
+public class Group_Details extends AppCompatActivity implements RecyclerItemTouch.OnItemClickListener  {
     String GroupId,GroupName;
     ArrayList<CSVPojo> arrayListCSV=new ArrayList<>();
     ArrayList<CSVPojo> arrayListToAdd=new ArrayList<>();
@@ -40,9 +49,10 @@ public class Group_Details extends AppCompatActivity {
     TextView statusCSV;
     DbHelper SQLite = new DbHelper(this);
     boolean exist;
-    RecyclerView ContactRecyclerView;
-   ConstraintLayout coordinatorLayout;
-    ContactsItemAdaptor ContactRecylcerAdapter;
+    ConstraintLayout coordinatorLayout;
+
+    RecyclerView  BrandsRecyclerView;
+    ContactAdapter BrandsRecylcerAdapter;
     private ProgressDialog loading;
 
     int GroupIdInt;
@@ -60,8 +70,8 @@ public class Group_Details extends AppCompatActivity {
         coordinatorLayout = (ConstraintLayout) findViewById(R.id
                 .coordinatorLayout);
         GroupIdInt = Integer.parseInt(GroupId);
-        ContactRecyclerView =findViewById(R.id.recycler_all_contacts);
-        ContactRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        BrandsRecyclerView =findViewById(R.id.recycler_all_contacts);
+        BrandsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         getPermissions();
         getAllDataGroupContacts();
@@ -78,6 +88,8 @@ public class Group_Details extends AppCompatActivity {
                 SaveCSVFILETOSQLLITE();
             }
         });
+        initAnimation();
+        getWindow().setAllowEnterTransitionOverlap(false);
 
     }
 
@@ -115,9 +127,19 @@ public class Group_Details extends AppCompatActivity {
     private void getAllDataGroupContacts()
     {
         arrayListContacts = SQLite.getAllDataContacts(GroupIdInt);
-        ContactRecylcerAdapter =new ContactsItemAdaptor(arrayListContacts,Group_Details.this);
-        ContactRecyclerView.setAdapter(ContactRecylcerAdapter);
-        ContactRecylcerAdapter.notifyDataSetChanged();
+//        ContactRecylcerAdapter =new ContactsItemAdaptor(arrayListContacts,Group_Details.this);
+//        ContactRecyclerView.setAdapter(ContactRecylcerAdapter);
+//        ContactRecylcerAdapter.notifyDataSetChanged();
+
+        BrandsRecylcerAdapter =new ContactAdapter(arrayListContacts,this);
+        BrandsRecyclerView.setAdapter(BrandsRecylcerAdapter);
+
+        BrandsRecylcerAdapter.notifyDataSetChanged();
+//        BrandsRecylcerAdapter.setLayoutManager(new GridLayoutManager(this, 2));
+//        BrandsRecyclerView.setAdapter(new GroupBrandsAdapter(arrayList, this));
+
+        BrandsRecyclerView.addOnItemTouchListener(new RecyclerItemTouch(Group_Details.this, BrandsRecyclerView, this));
+
     }
 
     private void getPermissions() {
@@ -212,5 +234,59 @@ public class Group_Details extends AppCompatActivity {
             Log.v("Main Activity", "Error Reading File on Line " + line, e);
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+
+    }
+
+    @Override
+    public void onLongItemClick(View view, final int position) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Group_Details.this);
+        alertDialogBuilder.setMessage("Are you Sure You want to Delete");
+        alertDialogBuilder.setPositiveButton("Yes",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+//                        SQLite.deleteContact(Integer.parseInt(arrayListContacts.get(position).getContact_Id()));
+//                        Intent intent= new Intent(Group_Details.this,Group_Details.class);
+//                        intent.putExtra("id",GroupId);
+//                        intent.putExtra("name",GroupName);
+//                        startActivity(intent);
+//                        finish();
+
+                        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(Group_Details.this);
+                        Intent in = new Intent(Group_Details.this, MainActivity.class);
+                        in.putExtra(Constants.KEY_ANIM_TYPE, Constants.TransitionType.SlideJava);
+                        in.putExtra(Constants.KEY_TITLE, "Slide By Java Code");
+                        in.putExtra("id",GroupId);
+                        in.putExtra("name",GroupName);
+                        startActivity(in, options.toBundle());
+                        finish();
+                    }
+                });
+
+        alertDialogBuilder.setNegativeButton("No",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+                    }
+                });
+
+        //Showing the alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+    private  void initAnimation()
+    {
+
+        Slide enterTransition = new Slide();
+        enterTransition.setSlideEdge(Gravity.TOP);
+        enterTransition.setDuration(1000);
+        enterTransition.setInterpolator(new AnticipateOvershootInterpolator());
+        getWindow().setEnterTransition(enterTransition);
     }
 }

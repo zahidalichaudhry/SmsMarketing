@@ -1,65 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/parent"
+    android:layout_marginTop="?android:actionBarSize"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.thinkgeniux.sms_marketing.Sms"
+    tools:context="com.example.thinkgeniux.sms_marketing.Activities.Sms"
     tools:showIn="@layout/app_bar_sms"
-    android:orientation="vertical"
-    android:background="#12aed9">
+    android:orientation="vertical">
 
-    <TextView
-        android:textStyle="bold"
-        android:textColor="#000"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:text="To"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <EditText
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:inputType="number"
-        android:background="#f9f7f7"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:id="@+id/et1"
-        android:hint="Enter the Number"
+    <android.support.v7.widget.CardView
+        android:id="@+id/messagcard"
         android:layout_width="match_parent"
-        android:layout_height="40dp" />
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/go"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fromcard">
 
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <TextView
-        android:textStyle="bold"
-        android:textColor="#000"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:text="From"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <EditText
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:inputType="text"
-        android:background="#f9f7f7"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:id="@+id/et2"
-        android:hint="Enter Your Identity"
+            <EditText
+                android:id="@+id/mes"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="#f9f7f7"
+                android:gravity="start"
+                android:padding="5dp"
+                android:hint="Enter Your Message Here"
+                android:inputType="textMultiLine"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/fromcard"
         android:layout_width="match_parent"
-        android:layout_height="40dp" />
-    <TextView
-        android:textStyle="bold"
-        android:textColor="#000"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:text="From"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tocard">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imageView7"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/from"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/icontag" />
+
+            <Spinner
+                android:id="@+id/from"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageView7"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/tocard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:id="@+id/et1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:background="#f9f7f7"
+                android:gravity="center"
+                android:hint="Enter the Number"
+                android:inputType="number"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
+
     <Spinner
         android:background="#faf8f8"
         android:id="@+id/spin"
@@ -71,35 +129,18 @@
 
     </Spinner>
 
-    <TextView
-        android:textStyle="bold"
-        android:textColor="#000"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:text="Message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <EditText
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:inputType="textMultiLine"
-        android:background="#f9f7f7"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:id="@+id/mes"
-        android:hint="Enter Your Message Here"
-        android:layout_width="match_parent"
-        android:layout_height="200dp" />
     <Button
         android:id="@+id/go"
-        android:text="Send Message"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Send Message"
+
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

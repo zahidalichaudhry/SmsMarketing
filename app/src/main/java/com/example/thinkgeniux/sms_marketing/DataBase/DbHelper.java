@@ -244,13 +244,37 @@ public static final String TABLE_NAME_BRAND = "brands";
 //        database.close();
 //    }
 
-//    public void delete(int id) {
-//        SQLiteDatabase database = this.getWritableDatabase();
-//
-//        String updateQuery = "DELETE FROM " + TABLE_NAME_Group + " WHERE " + COLUMN_ID + "=" + "'" + id + "'";
-//        Log.e("update sqlite ", updateQuery);
-//        database.execSQL(updateQuery);
-//        database.close();
-//    }
+    public void deleteGroup(int id) {
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        String updateQuery = "DELETE FROM " + TABLE_NAME_Group + " WHERE " + COLUMN_ID + "=" + "'" + id + "'";
+        Log.e("update sqlite ", updateQuery);
+        database.execSQL(updateQuery);
+        database.close();
+    }
+    public void deleteContact(int id) {
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        String updateQuery = "DELETE FROM " + TABLE_NAME_CONTACTS + " WHERE " + COLUMN_ID + "=" + "'" + id + "'";
+        Log.e("update sqlite ", updateQuery);
+        database.execSQL(updateQuery);
+        database.close();
+    }
+    public void deleteLog(int id) {
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        String updateQuery = "DELETE FROM " + TABLE_NAME_LOG + " WHERE " + GROUP_COLUMN_ID + "=" + "'" + id + "'";
+        Log.e("update sqlite ", updateQuery);
+        database.execSQL(updateQuery);
+        database.close();
+    }
+    public void deleteBrand(int id) {
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        String updateQuery = "DELETE FROM " + TABLE_NAME_BRAND + " WHERE " + COLUMN_BRAND_ID + "=" + "'" + id + "'";
+        Log.e("update sqlite ", updateQuery);
+        database.execSQL(updateQuery);
+        database.close();
+    }
 
 }

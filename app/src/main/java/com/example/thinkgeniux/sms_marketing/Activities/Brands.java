@@ -1,34 +1,43 @@
 package com.example.thinkgeniux.sms_marketing.Activities;
 
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.app.ActivityOptions;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.transition.Slide;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AnticipateOvershootInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.thinkgeniux.sms_marketing.Adapters.BrandsItemAdaptor;
-import com.example.thinkgeniux.sms_marketing.Adapters.GroupItemAdaptor;
+import com.example.thinkgeniux.sms_marketing.AdaptersHolderItemToch.GroupBrandsAdapter;
+import com.example.thinkgeniux.sms_marketing.Constants;
 import com.example.thinkgeniux.sms_marketing.DataBase.DbHelper;
+import com.example.thinkgeniux.sms_marketing.AdaptersHolderItemToch.RecyclerItemTouch;
 import com.example.thinkgeniux.sms_marketing.PojoClass.GroupItem;
 import com.example.thinkgeniux.sms_marketing.R;
 
 import java.util.ArrayList;
 
-public class Brands extends AppCompatActivity {
+public class Brands extends AppCompatActivity implements RecyclerItemTouch.OnItemClickListener  {
     RecyclerView  BrandsRecyclerView;
-    BrandsItemAdaptor  BrandsRecylcerAdapter;
+    GroupBrandsAdapter BrandsRecylcerAdapter;
 
     Button addGroup,submit;
     EditText name;
     ArrayList<GroupItem> arrayList=new ArrayList<>();
     DbHelper SQLite = new DbHelper(this);
     String GroupName;
+    ConstraintLayout parent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +51,16 @@ public class Brands extends AppCompatActivity {
         addGroup=(Button)findViewById(R.id.addBrand);
         submit=(Button)findViewById(R.id.submit);
         submit.setVisibility(View.GONE);
+        parent=(ConstraintLayout)findViewById(R.id.parent);
+        parent.setOnTouchListener(new View.OnTouchListener()
+        {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                return false;
+            }
+        });
         addGroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -73,6 +92,8 @@ public class Brands extends AppCompatActivity {
 
 
         getAllDataBrands();
+        initAnimation();
+        getWindow().setAllowEnterTransitionOverlap(false);
     }
 
     private void getAllDataBrands()
@@ -95,9 +116,22 @@ public class Brands extends AppCompatActivity {
 //        }
 
 //        adaptor.notifyDataSetChanged();
-        BrandsRecylcerAdapter =new BrandsItemAdaptor(arrayList,Brands.this);
+
+
+        BrandsRecylcerAdapter =new GroupBrandsAdapter(arrayList,this);
         BrandsRecyclerView.setAdapter(BrandsRecylcerAdapter);
+
         BrandsRecylcerAdapter.notifyDataSetChanged();
+//        BrandsRecylcerAdapter.setLayoutManager(new GridLayoutManager(this, 2));
+//        BrandsRecyclerView.setAdapter(new GroupBrandsAdapter(arrayList, this));
+
+        BrandsRecyclerView.addOnItemTouchListener(new RecyclerItemTouch(Brands.this, BrandsRecyclerView, this));
+
+    }
+    private void recyclerSetup(RecyclerView recyclerView) {
+
+
+
 
     }
 
@@ -116,4 +150,62 @@ public class Brands extends AppCompatActivity {
         getAllDataBrands();
     }
 
+    @Override
+    public void onItemClick(View view, int position) {
+
+    }
+
+    @Override
+    public void onLongItemClick(View view, final int position)
+    {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Brands.this);
+        alertDialogBuilder.setMessage("Are you Sure You want to Delete");
+        alertDialogBuilder.setPositiveButton("Yes",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+//                        arrayList.remove(position);
+//
+
+
+                        SQLite.deleteBrand(Integer.parseInt(arrayList.get(position).getGroup_Id()));
+
+                        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(Brands.this);
+                        Intent i = new Intent(Brands.this, Brands.class);
+                        i.putExtra(Constants.KEY_ANIM_TYPE, Constants.TransitionType.SlideJava);
+                        i.putExtra(Constants.KEY_TITLE, "Slide By Java Code");
+                        startActivity(i, options.toBundle());
+
+
+
+//                        Intent intent= new Intent(Brands.this, Brands.class);
+//                        startActivity(intent);
+//                        finish();
+
+                    }
+                });
+
+        alertDialogBuilder.setNegativeButton("No",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+                    }
+                });
+
+        //Showing the alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+    }
+    private  void initAnimation()
+    {
+
+        Slide enterTransition = new Slide();
+        enterTransition.setSlideEdge(Gravity.TOP);
+        enterTransition.setDuration(1000);
+        enterTransition.setInterpolator(new AnticipateOvershootInterpolator());
+        getWindow().setEnterTransition(enterTransition);
+    }
 }

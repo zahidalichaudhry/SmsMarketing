@@ -1,7 +1,5 @@
 package com.example.thinkgeniux.sms_marketing.VolleySMS;
 
-import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.widget.Toast;
 
@@ -11,14 +9,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.thinkgeniux.sms_marketing.DataBase.DbHelper;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,11 +17,11 @@ public class SMS_Send
 {
 //    String url = "https://portal.smsbundles.com/sendsms_url.html?Username=03454014792&Password=bramerz792&From="
 //            + from + "&To=" + to + "&Message=" + message;
-    public  String BASE_SMS_URl="https://portal.smsbundles.com/sendsms_url.html";
-    public String Username="03454014792";
-    public String Password="bramerz792";
+    public  static final   String BASE_SMS_URl="https://portal.smsbundles.com/sendsms_url.html";
+    public  static final String Username="03454014792";
+    public  static final String Password="bramerz792";
     //    String message;
-    public void CallAPi(final Context context, final String from, final String to, final String message){
+    public void   CallAPi(final Context context, final String from, final String to, final String message){
     StringRequest request = new StringRequest(Request.Method.POST, BASE_SMS_URl, new com.android.volley.Response.Listener<String>()
     {
 
@@ -38,10 +29,9 @@ public class SMS_Send
         public void onResponse(String response) {
 
 
-
             Toast.makeText(context, response , Toast.LENGTH_SHORT).show();
-
-//            try
+//            done=done+1;
+//
 //            {
 ////                loading.dismiss();
 ////                JSONObject abc = new JSONObject(response);
@@ -93,5 +83,5 @@ public class SMS_Send
             DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     RequestQueue requestQueue = Volley.newRequestQueue(context.getApplicationContext());
     requestQueue.add(request);
-}
+    }
 }
