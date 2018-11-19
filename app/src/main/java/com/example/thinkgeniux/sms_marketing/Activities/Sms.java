@@ -7,11 +7,13 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.transition.Slide;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -103,17 +105,32 @@ public class Sms extends AppCompatActivity
         go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String to=et1.getText().toString();
-                String message=mes.getText().toString();
-                loading = ProgressDialog.show(Sms.this,"Sending...","Please wait...",false,false);
-                send_SMS.CallAPi(Sms.this,fromName,to,message);
+                if (et1.getText().length()==0) {
+                    et1.requestFocus();
+                    et1.setError(Html.fromHtml("<font color='red'>Please Write Sender Number</font>"));
+                }
+                else if (mes.getText().length()==0) {
+                    mes.requestFocus();
+                    mes.setError(Html.fromHtml("<font color='red'>Please Write Message</font>"));
+                }
+                else
+                if (view==go)
+                {
+                    String to=et1.getText().toString();
+                    String message=mes.getText().toString();
+                    loading = ProgressDialog.show(Sms.this,"Sending...","Please wait...",false,false);
+                    send_SMS.CallAPi(Sms.this,fromName,to,message);
+                    DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
+                    String date = df.format(Calendar.getInstance().getTime());
+                    SQLite.insertSmsLog(to,fromName,message,date);
+                    Intent intent=new Intent(Sms.this,MainActivity.class);
+                    startActivity(intent);
+                    loading.dismiss();
+                }
 
-                DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
-                String date = df.format(Calendar.getInstance().getTime());
-                SQLite.insertSmsLog(to,fromName,message,date);
-                Intent intent=new Intent(Sms.this,MainActivity.class);
-                startActivity(intent);
-                loading.dismiss();
+
+
+
 //                SQLite.insertSmsLog(to);
 //                String url = "https://portal.smsbundles.com/sendsms_url.html?Username=03454014792&Password=bramerz792&From=" + from + "&To=" + to + "&Message=" + message;
 //                String response = null;

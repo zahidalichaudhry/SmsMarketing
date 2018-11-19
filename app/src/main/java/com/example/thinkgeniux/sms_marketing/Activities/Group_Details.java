@@ -72,8 +72,6 @@ public class Group_Details extends AppCompatActivity implements RecyclerItemTouc
         GroupIdInt = Integer.parseInt(GroupId);
         BrandsRecyclerView =findViewById(R.id.recycler_all_contacts);
         BrandsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        getPermissions();
         getAllDataGroupContacts();
         blank();
         getCSV.setOnClickListener(new View.OnClickListener() {
@@ -142,14 +140,6 @@ public class Group_Details extends AppCompatActivity implements RecyclerItemTouc
 
     }
 
-    private void getPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new
-                            String[]{android.Manifest.permission.WRITE_CONTACTS, Manifest.permission.READ_CONTACTS,
-                            Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    1);
-        }
-    }
     private void selectCSVFile(){
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);

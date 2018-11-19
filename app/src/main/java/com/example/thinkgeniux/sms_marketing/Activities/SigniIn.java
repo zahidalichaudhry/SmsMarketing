@@ -29,6 +29,7 @@ public class SigniIn extends AppCompatActivity {
  ConstraintLayout parent;
     Constants.TransitionType type;
  float elevation= (float) 10.0;
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -59,21 +60,23 @@ public class SigniIn extends AppCompatActivity {
         type = (Constants.TransitionType) getIntent().getSerializableExtra(Constants.KEY_ANIM_TYPE);
         carduser.setCardElevation(0);
         cardpass.setCardElevation(0);
-        username.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("ResourceType")
+        username.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onTouch(View v, MotionEvent event) {
                 carduser.setMinimumWidth(350);
                 carduser.setMinimumHeight(100);
                 carduser.setCardElevation(20);
+                return false;
             }
         });
-        userpass.setOnClickListener(new View.OnClickListener() {
+        userpass.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onTouch(View v, MotionEvent event) {
+
                 cardpass.setMinimumWidth(350);
                 cardpass.setMinimumHeight(100);
                 cardpass.setCardElevation(20);
+                return false;
             }
         });
         signIn.setOnClickListener(new View.OnClickListener() {
@@ -81,7 +84,6 @@ public class SigniIn extends AppCompatActivity {
             public void onClick(View v) {
                 stringUsername=username.getText().toString();
                 stringpass=userpass.getText().toString();
-                signIn.setBackground(getResources().getDrawable(R.drawable.whitonblueripple));
 //                Intent intent=new Intent(SigniIn.this, MainActivity.class);
 //                startActivity(intent);
 //                ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(SigniIn.this);
@@ -89,12 +91,13 @@ public class SigniIn extends AppCompatActivity {
 //                i.putExtra(Constants.KEY_ANIM_TYPE, Constants.TransitionType.FadeJava);
 //                i.putExtra(Constants.KEY_TITLE, "Fade By Java");
 //                startActivity(i, options.toBundle());
+
+
                 ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(SigniIn.this);
                 Intent i = new Intent(SigniIn.this, MainActivity.class);
                 i.putExtra(Constants.KEY_ANIM_TYPE, Constants.TransitionType.SlideJava);
                 i.putExtra(Constants.KEY_TITLE, "Slide By Java Code");
                 startActivity(i, options.toBundle());
-                finish();
 
 
             }

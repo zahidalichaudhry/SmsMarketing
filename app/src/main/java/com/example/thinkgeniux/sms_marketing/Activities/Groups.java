@@ -260,10 +260,6 @@ public class Groups extends AppCompatActivity
     @Override
     public void onItemClick(View view, int position)
     {
-//        Intent intent = new Intent(Groups.this, Group_Details.class);
-//        intent.putExtra("id",arrayList.get(position).getGroup_Id());
-//        intent.putExtra("name",arrayList.get(position).getGroup_Name());
-//        startActivity(intent);
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(Groups.this);
         Intent in = new Intent(Groups.this, Group_Details.class);
         in.putExtra(Constants.KEY_ANIM_TYPE, Constants.TransitionType.SlideJava);

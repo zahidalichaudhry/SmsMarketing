@@ -1,20 +1,26 @@
 package com.example.thinkgeniux.sms_marketing.Activities;
 
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.transition.Slide;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,12 +47,19 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.thinkgeniux.sms_marketing.Constants;
 import com.example.thinkgeniux.sms_marketing.DataBase.DbHelper;
+import com.example.thinkgeniux.sms_marketing.PojoClass.CSVPojo;
 import com.example.thinkgeniux.sms_marketing.PojoClass.ContactItem;
 import com.example.thinkgeniux.sms_marketing.PojoClass.GroupItem;
 import com.example.thinkgeniux.sms_marketing.PojoClass.Spinner_Pojo;
 import com.example.thinkgeniux.sms_marketing.R;
 import com.example.thinkgeniux.sms_marketing.VolleySMS.SMS_Send;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,26 +71,29 @@ public class Bulk_Message extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 //    EditText et1,et2,mes;
     EditText message;
-    Button sendSms;
+    Button sendSms,addcsv;
     Spinner tospinner,fromspinner;
+
     String toName="",fromName="";
     boolean thread =true;
     String tId="",fromId="",messagestring,totalnumberString,donnumberString;
 
     private ProgressDialog loading;
     ConstraintLayout parent;
+    boolean CSV=false;
     int GroupIdInt,totalnumberInteger,donenumberInteger=0;
 //    String color_name="",size_name="";
 //    String[] names=new String[]{"Home","Demo","List"};
     ArrayAdapter<String> adapter;
-    ArrayList<ContactItem> arrayListContacts=new ArrayList<>();
+    ArrayList<ContactItem> arrayListContactsfromSqlite=new ArrayList<>();
+    ArrayList<CSVPojo> arrayListContactsfromCsv=new ArrayList<>();
     ArrayList<Spinner_Pojo> arrayListTo= new ArrayList<>();
     ArrayList<Spinner_Pojo> arrayListFrom= new ArrayList<>();
     DbHelper SQLite = new DbHelper(this);
     ArrayList<GroupItem> arrayListGroups=new ArrayList<>();
     ArrayList<GroupItem> arrayListBrands=new ArrayList<>();
 
-    SMS_Send send_SMS;
+//    SMS_Send send_SMS;
 
 
     @Override
@@ -96,13 +112,47 @@ public class Bulk_Message extends AppCompatActivity
 //        mes=findViewById(R.id.mes);
         sendSms=findViewById(R.id.go);
         message=(EditText)findViewById(R.id.message) ;
-        send_SMS=new SMS_Send();
+        addcsv=(Button)findViewById(R.id.adcsv);
+        addcsv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectCSVFile();
+            }
+        });
+//        send_SMS=new SMS_Send();
         sendSms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
+
+
             {
-                loading = ProgressDialog.show(Bulk_Message.this,"Sending...","Please wait...",false,false);
-                getAllDataGroupContactsAndSending();
+                if (message.getText().length()==0) {
+                    message.requestFocus();
+                    message.setError(Html.fromHtml("<font color='red'>Please Write Message</font>"));
+                }else
+                    if (fromName.equals(""))
+                    {
+                        Snackbar.make(parent, "Please Select Brand", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                }
+                else if (toName.equals("")&&arrayListContactsfromCsv.size()==0)
+
+                {
+                    Snackbar.make(parent, "Please Chose Phone Book To Send", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+                else if (v==sendSms)
+                {
+                    loading = ProgressDialog.show(Bulk_Message.this,"Sending...","Please wait...",false,false);
+                    messagestring=message.getText().toString().trim();
+                    if (!CSV) {
+                        getAllDataGroupContactsAndSending();
+                    }else if (CSV)
+                    {
+                        SendMessagesFromCSVFile();
+                    }
+                }
+
 
 
             }
@@ -132,6 +182,8 @@ public class Bulk_Message extends AppCompatActivity
                     Spinner_Pojo group = (Spinner_Pojo) parent.getSelectedItem();
                     toName = group.getName().toString();
                     tId = group.getId().toString();
+                    addcsv.setEnabled(false);
+                    addcsv.setBackground(getResources().getDrawable(R.color.greyTextColor));
                 }
 
 
@@ -146,9 +198,11 @@ public class Bulk_Message extends AppCompatActivity
         fromspinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Spinner_Pojo brand = (Spinner_Pojo) parent.getSelectedItem();
-                fromName = brand.getName().toString();
-                fromId = brand.getId().toString();
+                if(position > 0) {
+                    Spinner_Pojo brand = (Spinner_Pojo) parent.getSelectedItem();
+                    fromName = brand.getName().toString();
+                    fromId = brand.getId().toString();
+                }
             }
 
             @Override
@@ -184,16 +238,26 @@ public class Bulk_Message extends AppCompatActivity
         getWindow().setAllowEnterTransitionOverlap(false);
     }
 
+    private void SendMessagesFromCSVFile()
+    {
+        for (int i=0;i<arrayListContactsfromCsv.size();i++)
+        {
+            String sendingNumber="0"+arrayListContactsfromCsv.get(i).getNumber();
+//            send_SMS.CallAPi(Bulk_Message.this,fromName,sendingNumber,messagestring);
+            CallSMSAPi(sendingNumber);
+//            Toast.makeText(Bulk_Message.this,sendingNumber,Toast.LENGTH_LONG).show();
+        }
+        loading.dismiss();
+        TrackingMessages();
+    }
+
     private void getAllDataGroupContactsAndSending()
     {
-
         GroupIdInt = Integer.parseInt(tId);
-        arrayListContacts = SQLite.getAllDataContacts(GroupIdInt);
-        messagestring=message.getText().toString().trim();
-        ;
-        for (int i=0;i<arrayListContacts.size();i++)
+        arrayListContactsfromSqlite = SQLite.getAllDataContacts(GroupIdInt);
+        for (int i=0;i<arrayListContactsfromSqlite.size();i++)
         {
-            String sendingNumber="0"+arrayListContacts.get(i).getContact_Name();
+            String sendingNumber="0"+arrayListContactsfromSqlite.get(i).getContact_Name();
 //            send_SMS.CallAPi(Bulk_Message.this,fromName,sendingNumber,messagestring);
             CallSMSAPi(sendingNumber);
             DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
@@ -211,11 +275,23 @@ public class Bulk_Message extends AppCompatActivity
         {
 
             @Override
-            public void onResponse(String response) {
+            public void onResponse(String response)
+            {
+                if (response.equals("Message Sent Successfully"))
+                {
+                    donenumberInteger=donenumberInteger+1;
+                    DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
+                    String date = df.format(Calendar.getInstance().getTime());
+                    SQLite.insertSmsLog(sendingNumberString,fromName,messagestring,date);
+                }
+                else {
+                    donenumberInteger=donenumberInteger+1;
+                    Snackbar.make(parent, "Unable to Send Message on=" + sendingNumberString + "(Please Check)", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
 
 
-                Toast.makeText(Bulk_Message.this, response , Toast.LENGTH_SHORT).show();
-            donenumberInteger=donenumberInteger+1;
+
 //
 //            {
 ////                loading.dismiss();
@@ -243,9 +319,9 @@ public class Bulk_Message extends AppCompatActivity
         }, new com.android.volley.Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //  Log.e("Error",error.printStackTrace());
-                Toast.makeText(Bulk_Message.this, "Volley Error"+error , Toast.LENGTH_SHORT).show();
-//            onBackPressed();
+                donenumberInteger=donenumberInteger+1;
+                Snackbar.make(parent, "Unable to Send Message on="+sendingNumberString+"(Please Check)", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
 
             }
         }
@@ -475,11 +551,45 @@ public class Bulk_Message extends AppCompatActivity
 //        shop=(Button)dialogView.findViewById(R.id.shop);
 //        chek=(Button)dialogView.findViewById(R.id.chek);
         final TextView totalnumber,donenumber;
+         final Button donbtn;
+
+         donbtn=(Button)dialogView.findViewById(R.id.dimissbutton);
+
         totalnumber=(TextView)dialogView.findViewById(R.id.total);
         donenumber=(TextView)dialogView.findViewById(R.id.done);
         builder.setTitle("Message Sending");
-        totalnumber.setText(String.valueOf(arrayListContacts.size()));
+        if (!CSV) {
+            totalnumber.setText(String.valueOf(arrayListContactsfromSqlite.size()));
+        }else if(CSV) {
+            totalnumber.setText(String.valueOf(arrayListContactsfromCsv.size()));
 
+        }
+        donbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!CSV){
+                    if (donenumberInteger>=arrayListContactsfromSqlite.size())
+                    {
+                        AfterDimmissDialog();
+
+                    }else
+                    {
+                        Toast.makeText(Bulk_Message.this, "Some Messages are Left" , Toast.LENGTH_SHORT).show();
+                    }
+                }else if (CSV)
+                {
+                    if (donenumberInteger>=arrayListContactsfromCsv.size())
+                    {
+                        AfterDimmissDialog();
+
+                    }else
+                    {
+                        Toast.makeText(Bulk_Message.this, "Some Messages are Left" , Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            }
+        });
         if (thread){
         final Thread t = new Thread() {
 
@@ -501,47 +611,49 @@ public class Bulk_Message extends AppCompatActivity
         };
 
         t.start();}
-//        shop.setOnClickListener(new View.OnClickListener() {
+//        builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
 //            @Override
-//            public void onClick(View v) {
-//                Intent intent =new Intent(Product_Details.this,Home_Categories.class);
-//                startActivity(intent);
+//            public void onClick(DialogInterface dialogInterface, int i)
+//            {
+//                if (!CSV){
+//                if (donenumberInteger>=arrayListContactsfromSqlite.size())
+//                {
+//                    AfterDimmissDialog();
+//
+//            }else
+//                {
+//                    Toast.makeText(Bulk_Message.this, "Some Messages are Left" , Toast.LENGTH_SHORT).show();
+//                }
+//            }else if (CSV)
+//            {
+//                if (donenumberInteger>=arrayListContactsfromCsv.size())
+//                {
+//                    AfterDimmissDialog();
+//
+//                }else
+//                {
+//                    Toast.makeText(Bulk_Message.this, "Some Messages are Left" , Toast.LENGTH_SHORT).show();
+//                }
+//
 //            }
-//        });
-//        chek.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent =new Intent(Product_Details.this,My_Cart.class);
-//                startActivity(intent);
 //            }
+//
 //        });
-
-        builder.setNegativeButton("Done", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if (donenumberInteger>=arrayListContacts.size())
-                {
-                    dialogInterface.dismiss();
-                    thread=false;
-//                    Intent intent=new Intent(Bulk_Message.this,MainActivity.class);
-//                    startActivity(intent);
-
-                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(Bulk_Message.this);
-                    Intent in = new Intent(Bulk_Message.this, MainActivity.class);
-                    in.putExtra(Constants.KEY_ANIM_TYPE, Constants.TransitionType.SlideJava);
-                    in.putExtra(Constants.KEY_TITLE, "Slide By Java Code");
-                    startActivity(in, options.toBundle());
-
-
-            }else
-                {
-                    Toast.makeText(Bulk_Message.this, "Some Messages are Left" , Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
         builder.setCancelable(false);
         builder.show();
     }
+
+    private void AfterDimmissDialog()
+    {
+        thread=false;
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(Bulk_Message.this);
+        Intent in = new Intent(Bulk_Message.this, MainActivity.class);
+        in.putExtra(Constants.KEY_ANIM_TYPE, Constants.TransitionType.SlideJava);
+        in.putExtra(Constants.KEY_TITLE, "Slide By Java Code");
+        startActivity(in, options.toBundle());
+        finish();
+    }
+
     private  void initAnimation()
     {
 
@@ -550,5 +662,48 @@ public class Bulk_Message extends AppCompatActivity
         enterTransition.setDuration(1000);
         enterTransition.setInterpolator(new AnticipateOvershootInterpolator());
         getWindow().setEnterTransition(enterTransition);
+    }
+    private void selectCSVFile(){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/csv");
+//        intent.addCategory(Intent.CATEGORY_OPENABLE);
+//        intent.setType("*/*");
+        Intent i = Intent.createChooser(intent, "File");
+//        startActivityForResult(Intent.createChooser(intent, "Open CSV"), 1);
+        startActivityForResult(i, 1);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==1 && resultCode== Activity.RESULT_OK)
+            try {
+                final Uri imageUri=data.getData();
+                File initialFile = new File(data.getData().getPath());
+//                InputStream targetStream = new FileInputStream(initialFile);
+                InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                proImportCSV(inputStream);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+    }
+    private void proImportCSV(InputStream from) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(from, Charset.forName("UTF-8")));
+        String line="";
+        try{
+            //Read each line
+            while ((line = reader.readLine()) != null) {
+                arrayListContactsfromCsv.add(new CSVPojo(line));
+                tospinner.setEnabled(false);
+                CSV=true;
+
+//            cur.setCapital(RowData[1]);
+
+                //Add the State object to the ArrayList (in this case we are the ArrayList)
+            }
+        }catch (IOException e) {
+            Log.v("Main Activity", "Error Reading File on Line " + line, e);
+            e.printStackTrace();
+        }
     }
 }

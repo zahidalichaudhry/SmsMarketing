@@ -1,7 +1,9 @@
 package com.example.thinkgeniux.sms_marketing.Activities;
 
+import android.Manifest;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -147,6 +149,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         initAnimation();
         getWindow().setAllowEnterTransitionOverlap(false);
+        getPermissions();
     }
 
     @Override
@@ -246,5 +249,13 @@ public class MainActivity extends AppCompatActivity
         enterTransition.setDuration(1000);
         enterTransition.setInterpolator(new AnticipateOvershootInterpolator());
         getWindow().setEnterTransition(enterTransition);
+    }
+    private void getPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new
+                            String[]{android.Manifest.permission.WRITE_CONTACTS, Manifest.permission.READ_CONTACTS,
+                            Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    1);
+        }
     }
 }

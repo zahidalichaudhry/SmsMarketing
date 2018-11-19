@@ -9,7 +9,6 @@
     tools:context="com.example.thinkgeniux.sms_marketing.Activities.Bulk_Message"
     tools:showIn="@layout/app_bar_bulk__message"
     android:orientation="vertical"
-
     android:background="@color/white">
 
 

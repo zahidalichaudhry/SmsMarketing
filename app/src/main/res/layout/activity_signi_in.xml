@@ -160,13 +160,11 @@
             android:id="@+id/signin"
             android:layout_width="0dp"
             android:layout_height="60dp"
-            android:background="@color/colorPrimary"
-
+            android:background="@drawable/whitonblueripple"
             android:fontFamily="@font/roboto_regular"
             android:text="SIGNIN"
-            android:textColor="@color/white"
+            android:textColor="@color/colorPrimary"
             android:gravity="center"
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
